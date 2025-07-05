@@ -1,0 +1,29 @@
+{
+  "name": "video2txt",
+  "version": "1.0.0",
+  "description": "將影片轉換為文稿和字幕檔案的工具",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js",
+    "dev": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "video",
+    "transcript",
+    "subtitle",
+    "whisper",
+    "ffmpeg",
+    "srt"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^11.2.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "nodejs-whisper": "^0.2.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+} 
