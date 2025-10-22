@@ -122,8 +122,51 @@ function formatSRTTime(seconds) {
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = Math.floor(seconds % 60);
     const milliseconds = Math.floor((seconds % 1) * 1000);
-    
+
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')},${milliseconds.toString().padStart(3, '0')}`;
+}
+
+// 清理 Whisper 生成的 SRT 檔案格式
+async function cleanWhisperSRT(videoId) {
+    try {
+        // Whisper 在 temp 目錄生成 SRT，檔名為 ${videoId}.wav.srt
+        const tempDir = path.join(__dirname, 'temp');
+        const sourceSrtPath = path.join(tempDir, `${videoId}.wav.srt`);
+
+        // 檢查 Whisper 生成的 SRT 檔案是否存在
+        if (!await fs.pathExists(sourceSrtPath)) {
+            console.log(`⚠️ Whisper SRT 檔案不存在: ${sourceSrtPath}`);
+            return null;
+        }
+
+        console.log(`🧹 正在清理 Whisper SRT 格式: ${videoId}.wav.srt`);
+
+        // 讀取 SRT 內容
+        const content = await fs.readFile(sourceSrtPath, 'utf8');
+
+        // 清理字幕文本中的時間戳記 [HH:MM:SS.mmm --> HH:MM:SS.mmm]
+        // 並移除前後多餘的空格
+        const cleanedContent = content.replace(/\[[\d:.,]+\s*-->\s*[\d:.,]+\]\s*/g, '');
+
+        // 將清理後的 SRT 儲存到 data 目錄
+        const outputDir = path.join(__dirname, 'data');
+        await fs.ensureDir(outputDir);
+        const outputSrtPath = path.join(outputDir, `${videoId}.srt`);
+
+        await fs.writeFile(outputSrtPath, cleanedContent, 'utf8');
+
+        console.log(`✅ SRT 格式清理完成: ${outputSrtPath}`);
+
+        // 刪除 temp 目錄中的原始 SRT 檔案
+        await fs.remove(sourceSrtPath);
+        console.log(`🗑️ 已刪除暫存 SRT: ${sourceSrtPath}`);
+
+        return outputSrtPath;
+
+    } catch (error) {
+        console.error('❌ 清理 SRT 格式失敗:', error.message);
+        return null;
+    }
 }
 
 // 處理單個影片檔案
@@ -145,11 +188,17 @@ async function processVideoFile(videoPath) {
         // 步驟 1: 將影片轉換為音檔
         await convertVideoToAudio(videoPath, audioPath);
         
-        // 步驟 2: 使用 Whisper 轉換音檔為文稿
+        // 步驟 2: 使用 Whisper 轉換音檔為文稿（同時生成 SRT）
         const transcriptPath = await transcriptToText(audioPath, videoId);
-        
-        // 步驟 3: 轉換文稿為 SRT 字幕
-        const srtPath = await convertTranscriptToSRT(transcriptPath, videoId);
+
+        // 步驟 3: 清理 Whisper 生成的 SRT 格式
+        let srtPath = await cleanWhisperSRT(videoId);
+
+        // 如果 Whisper 沒有生成 SRT，則手動生成
+        if (!srtPath) {
+            console.log('⚠️ Whisper 未生成 SRT，使用備用方法生成字幕');
+            srtPath = await convertTranscriptToSRT(transcriptPath, videoId);
+        }
         
         console.log(`🎉 影片處理完成: ${videoName}`);
         console.log(`   📝 文稿檔案: ${transcriptPath}`);
@@ -293,5 +342,6 @@ module.exports = {
     processVideoFile,
     scanVideoDirectory,
     convertVideoToAudio,
-    convertTranscriptToSRT
+    convertTranscriptToSRT,
+    cleanWhisperSRT
 }; 
