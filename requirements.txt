@@ -1,0 +1,11 @@
+# Video2txt Python 依賴
+# 影片轉字幕工具
+
+# OpenAI Whisper - 語音識別
+openai-whisper>=20231117
+
+# FFmpeg Python 包裝器
+ffmpeg-python>=0.2.0
+
+# 進度條顯示
+tqdm>=4.65.0

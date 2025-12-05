@@ -1,15 +1,29 @@
-# Node.js 相關檔案
-node_modules/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-package-lock.json
+# Python 虛擬環境
+venv/
+env/
+.venv/
+.env/
+
+# Python 快取
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Python 套件安裝
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+pip-log.txt
 
 # 輸出目錄
 data/
 temp/
 
-# 影片檔案目錄中的實際影片檔案
+# 影片檔案
 videos/*.mp4
 videos/*.avi
 videos/*.mkv
@@ -18,6 +32,8 @@ videos/*.wmv
 videos/*.flv
 videos/*.webm
 videos/*.m4v
+
+# 音檔檔案
 videos/*.mp3
 videos/*.wav
 videos/*.m4a
@@ -25,47 +41,27 @@ videos/*.aac
 videos/*.flac
 videos/*.ogg
 
+# Whisper 模型（如果下載到本地）
+models/
+*.bin
+*.pt
+
 # 系統檔案
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
 
-# 編輯器和 IDE 檔案
+# 編輯器和 IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# 日誌檔案
-*.log
-logs/
-
-# 環境設定檔案
+# 環境設定
 .env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
-# 暫存檔案
+# 日誌和暫存
+*.log
 *.tmp
-*.temp
 *.cache
-
-# Whisper 模型檔案 (如果下載到本地)
-models/
-*.bin
-*.pt
-
-# 測試覆蓋率報告
-coverage/
-.nyc_output/
-
-# 編譯後的檔案
-dist/
-build/ 
